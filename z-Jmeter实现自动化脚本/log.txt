@@ -1,0 +1,143 @@
+timeStamp,elapsed,label,responseCode,responseMessage,threadName,dataType,success,failureMessage,bytes,sentBytes,grpThreads,allThreads,URL,Latency,IdleTime,Connect
+1684310325152,0,BeanShell 取样器,200,OK,线程组 10-1,text,true,,0,0,1,11,null,0,0,0
+1684310325095,127,搜索页面数据,200,OK,个人中心模块 9-1,text,true,,332,416,1,10,http://localhost%3A8360/api/search/index,127,0,39
+1684310325103,124,统计商品总数,200,OK,商品模块 5-1,text,true,,284,415,1,10,http://localhost%3A8360/api/goods/count,124,0,37
+1684310325223,11,搜索帮助,200,OK,个人中心模块 9-1,text,true,,268,435,1,10,http://localhost%3A8360/api/search/helper?keyword=灯,11,0,0
+1684310325234,6,清除搜索历史,200,OK,个人中心模块 9-1,text,true,,268,445,1,10,http://localhost%3A8360/api/search/clearHistory,6,0,0
+1684310325103,170,保存收货地址,200,OK,收货地址模块 6-1,text,true,,474,591,1,10,http://localhost%3A8360/api/address/saveAddress,170,0,35
+1684310325096,199,保存收货地址,200,OK,收货地址流程 11-1,text,true,,474,591,1,10,http://localhost%3A8360/api/address/saveAddress,199,0,44
+1684310325105,261,分类-全部分类,200,OK,分类模块 3-1,text,true,,2240,417,1,10,http://localhost%3A8360/api/catalog/index,261,0,30
+1684310325367,4,分类-全部分类（多参）,200,OK,分类模块 3-1,text,true,,2239,425,1,10,http://localhost%3A8360/api/catalog/index?abc=123,4,0,0
+1684310325371,5,分类-当前分类,200,OK,分类模块 3-1,text,true,,392,430,1,10,http://localhost%3A8360/api/catalog/current?id=1005000,5,0,0
+1684310325377,6,分类-当前分类（多参）,200,OK,分类模块 3-1,text,true,,392,438,1,10,http://localhost%3A8360/api/catalog/current?id=1005000&abc=752,5,0,0
+1684310325297,141,收货地址详情,200,OK,收货地址流程 11-1,text,true,,598,433,1,10,http://localhost%3A8360/api/address/addressDetail?id=1380,141,0,0
+1684310325105,340,足迹列表,200,OK,足迹模块 8-1,text,true,,2694,432,1,10,http://localhost%3A8360/api/footprint/list?page=1&size=8,340,0,32
+1684310325446,102,足迹列表（多参）,200,OK,足迹模块 8-1,text,true,,2694,440,1,10,http://localhost%3A8360/api/footprint/list?page=1&size=8&abc=123,102,0,0
+1684310325549,70,足迹列表（少参-缺少page）,200,OK,足迹模块 8-1,text,true,,2694,425,1,10,http://localhost%3A8360/api/footprint/list?size=8,70,0,0
+1684310325440,186,删除收货地址,200,OK,收货地址流程 11-1,text,true,,269,458,1,10,http://localhost%3A8360/api/address/deleteAddress,186,0,0
+1684310325227,433,获得商品的详情,200,OK,商品模块 5-1,text,true,,10512,427,1,10,http://localhost%3A8360/api/goods/detail?id=1181000,433,0,0
+1684310325099,575,首页请求,200,OK,首页模块 2-1,text,true,,7804,417,1,10,http://localhost%3A8360/api/index/appInfo,575,0,40
+1684310325619,112,足迹列表（少参-缺少size）,200,OK,足迹模块 8-1,text,true,,3284,425,1,10,http://localhost%3A8360/api/footprint/list?page=1,112,0,0
+1684310325661,96,获得商品列表,200,OK,商品模块 5-1,text,true,,231432,414,1,10,http://localhost%3A8360/api/goods/list,95,0,0
+1684310325276,489,JDBC Request删除数据,200,OK,收货地址模块 6-1,text,true,,41,0,1,10,null,489,0,295
+1684310325628,138,JDBC Request删除数据,200,OK,收货地址流程 11-1,text,true,,41,0,1,10,null,138,0,121
+1684310325757,28,统计商品总数（多参）,200,OK,商品模块 5-1,text,true,,284,423,1,10,http://localhost%3A8360/api/goods/count?abc=123,28,0,0
+1684310325731,67,足迹列表（无参）,200,OK,足迹模块 8-1,text,true,,3283,418,1,10,http://localhost%3A8360/api/footprint/list,67,0,0
+1684310325106,695,添加商品到购物车,200,OK,购物车流程 1-1,text,true,,1400,500,1,10,http://localhost%3A8360/api/cart/add,695,0,28
+1684310325098,717,添加商品到购物车,200,OK,购物车模块 4-1,text,true,,1400,500,1,10,http://localhost%3A8360/api/cart/add,717,0,41
+1684310325768,57,获得收货地址,200,OK,收货地址流程 11-1,text,true,,269,424,1,10,http://localhost%3A8360/api/address/getAddresses,57,0,0
+1684310325767,69,删除收货地址,200,OK,收货地址模块 6-1,text,true,,268,458,1,9,http://localhost%3A8360/api/address/deleteAddress,69,0,0
+1684310325837,2,JDBC Request删除数据,200,OK,收货地址模块 6-1,text,true,,41,0,1,9,null,2,0,0
+1684310325842,34,获取区域列表,200,OK,收货地址模块 6-1,text,true,,4018,426,1,9,http://localhost%3A8360/api/region/list?parentId=1,34,0,0
+1684310325802,92,更新购物车的商品,200,OK,购物车流程 1-1,text,false,Expected to find an object with property ['errno'] in path $ but found 'java.lang.String'. This is not a json object according to the JsonProvider: 'com.jayway.jsonpath.spi.json.JsonSmartJsonProvider'.,231,479,1,9,http://localhost%3A8360/api/cart/update,92,0,0
+1684310325800,101,足迹列表（错误参）,200,OK,足迹模块 8-1,text,true,,3283,434,1,9,http://localhost%3A8360/api/footprint/list?page1=1&size1=8,101,0,0
+1684310325902,5,删除足迹,200,OK,足迹模块 8-1,text,true,,280,463,1,9,http://localhost%3A8360/api/footprint/delete,5,0,0
+1684310325879,28,收货地址详情,200,OK,收货地址模块 6-1,text,true,,269,433,1,9,http://localhost%3A8360/api/address/addressDetail?id=1379,28,0,0
+1684310325909,19,收货地址详情（多参）,200,OK,收货地址模块 6-1,text,true,,269,441,1,9,http://localhost%3A8360/api/address/addressDetail?id=1379&abc=123,19,0,0
+1684310325786,452,获得商品的详情（多参）,200,OK,商品模块 5-1,text,true,,10512,435,1,9,http://localhost%3A8360/api/goods/detail?id=1181000&abc=123,451,0,0
+1684310325815,429,取消或选择购物车的商品,200,OK,购物车模块 4-1,text,true,,1399,473,1,9,http://localhost%3A8360/api/cart/checked,429,0,0
+1684310325674,580,首页请求（多参）,200,OK,首页模块 2-1,text,true,,7804,425,1,9,http://localhost%3A8360/api/index/appInfo?abc=111,580,0,0
+1684310325104,1209,订单列表,200,OK,订单模块 7-1,text,true,,2748,439,1,8,http://localhost%3A8360/api/order/list?showType=0&size=8&page=1,1209,0,32
+1684310326314,17,保存收货地址,200,OK,订单模块 7-1,text,true,,451,569,1,8,http://localhost%3A8360/api/address/saveAddress,16,0,0
+1684310325895,454,获取购物车的商品件数,200,OK,购物车流程 1-1,text,true,,298,419,1,8,http://localhost%3A8360/api/cart/goodsCount,454,0,0
+1684310325908,456,删除足迹（无参）,400,Bad Request,足迹模块 8-1,text,true,,96916,440,1,8,http://localhost%3A8360/api/footprint/delete,456,0,0
+1684310325241,1123,上传头像,500,Internal Server Error,个人中心模块 9-1,text,false,获取首页信息失败,103002,27771,1,8,http://localhost%3A8360/api/upload/uploadAvatar,1123,0,0
+1684310326238,128,获得商品的详情（无参）,500,Internal Server Error,商品模块 5-1,text,true,,109726,416,1,8,http://localhost%3A8360/api/goods/detail,128,0,0
+1684310325383,986,分类-当前分类（无参）,500,Internal Server Error,分类模块 3-1,text,true,,109726,419,1,8,http://localhost%3A8360/api/catalog/current,986,0,0
+1684310325930,440,收货地址详情（无参）,500,Internal Server Error,收货地址模块 6-1,text,true,,109726,425,1,8,http://localhost%3A8360/api/address/addressDetail,439,0,0
+1684310326331,45,订单详情,200,OK,订单模块 7-1,text,true,,1753,429,1,8,http://localhost%3A8360/api/order/detail?orderId=1333,45,0,0
+1684310326377,24,取消订单,200,OK,订单模块 7-1,text,true,,279,454,1,8,http://localhost%3A8360/api/order/cancel,24,0,0
+1684310326402,7,删除订单,200,OK,订单模块 7-1,text,true,,279,454,1,8,http://localhost%3A8360/api/order/delete,7,0,0
+1684310326409,9,我的页面获取订单数状态,200,OK,订单模块 7-1,text,true,,306,425,1,8,http://localhost%3A8360/api/order/orderCount?id=0,9,0,0
+1684310326418,5,物流信息,200,OK,订单模块 7-1,text,true,,278,429,1,8,http://localhost%3A8360/api/order/express?orderId=245,5,0,0
+1684310326424,13,获取微信统一下单prepay_id,200,OK,订单模块 7-1,text,true,,276,433,1,8,http://localhost%3A8360/api/pay/preWeixinPay?orderId=1322,13,0,0
+1684310326438,10,获取微信统一下单prepay_id（取消订单）,200,OK,订单模块 7-1,text,true,,275,433,1,8,http://localhost%3A8360/api/pay/preWeixinPay?orderId=1422,10,0,0
+1684310326367,238,获得商品的详情（错误参）,500,Internal Server Error,商品模块 5-1,text,true,,109726,428,1,8,http://localhost%3A8360/api/goods/detail?id2=1181000,238,0,0
+1684310326449,167,获取微信统一下单prepay_id（无参）,500,Internal Server Error,订单模块 7-1,text,true,,109726,420,1,8,http://localhost%3A8360/api/pay/preWeixinPay,166,0,0
+1684310326616,16,获取微信统一下单prepay_id（多参）,200,OK,订单模块 7-1,text,true,,276,441,1,8,http://localhost%3A8360/api/pay/preWeixinPay?orderId=1422&abc=123,16,0,0
+1684310326370,274,分类-当前分类（错误参）,500,Internal Server Error,分类模块 3-1,text,true,,109726,431,1,8,http://localhost%3A8360/api/catalog/current?id2=1005000,274,0,0
+1684310326645,6,分类请求,200,OK,分类模块 3-1,text,true,,2135,481,1,8,http://localhost%3A8360/api/catalog/currentlist,6,0,0
+1684310326652,7,分类请求（多参）,200,OK,分类模块 3-1,text,true,,2135,491,1,8,http://localhost%3A8360/api/catalog/currentlist,7,0,0
+1684310326660,9,分类请求（少参-缺少size）,200,OK,分类模块 3-1,text,true,,2584,470,1,8,http://localhost%3A8360/api/catalog/currentlist,9,0,0
+1684310326670,8,分类请求（少参-缺少page）,200,OK,分类模块 3-1,text,true,,2135,470,1,8,http://localhost%3A8360/api/catalog/currentlist,8,0,0
+1684310326365,326,删除足迹（错误参）,500,Internal Server Error,足迹模块 8-1,text,true,,109506,464,1,8,http://localhost%3A8360/api/footprint/delete,326,0,0
+1684310326632,174,获取微信统一下单prepay_id（错误参）,500,Internal Server Error,订单模块 7-1,text,true,,109726,434,1,7,http://localhost%3A8360/api/pay/preWeixinPay?orderId1=1422,174,0,0
+1684310326807,12,提交订单,200,OK,订单模块 7-1,text,true,,277,554,1,7,http://localhost%3A8360/api/order/submit,12,0,0
+1684310326819,9,提交订单（多参）,200,OK,订单模块 7-1,text,true,,282,535,1,7,http://localhost%3A8360/api/order/submit,9,0,0
+1684310326371,462,收货地址详情（错误参）,500,Internal Server Error,收货地址模块 6-1,text,true,,109726,431,1,7,http://localhost%3A8360/api/address/addressDetail?id2=0,462,0,0
+1684310326828,10,提交订单（少参-缺少收货地址-为空）,200,OK,订单模块 7-1,text,true,,282,536,1,7,http://localhost%3A8360/api/order/submit,10,0,0
+1684310326605,280,获得商品列表（多参）,200,OK,商品模块 5-1,text,true,,231433,422,1,7,http://localhost%3A8360/api/goods/list?abc=123,280,0,0
+1684310326679,223,分类请求（少参-缺少id）,500,Internal Server Error,分类模块 3-1,text,true,,109726,466,1,6,http://localhost%3A8360/api/catalog/currentlist,223,0,0
+1684310326835,83,保存收货地址（多参）,200,OK,收货地址模块 6-1,text,true,,473,601,1,6,http://localhost%3A8360/api/address/saveAddress,82,0,0
+1684310326919,3,JDBC Request删除数据,200,OK,收货地址模块 6-1,text,true,,41,0,1,6,null,3,0,0
+1684310326350,582,删除购物车的商品,200,OK,购物车流程 1-1,text,true,,901,455,1,6,http://localhost%3A8360/api/cart/delete,582,0,0
+1684310326245,691,获取购物车的商品件数,200,OK,购物车模块 4-1,text,true,,298,419,1,5,http://localhost%3A8360/api/cart/goodsCount,691,0,0
+1684310326925,18,删除收货地址,200,OK,收货地址模块 6-1,text,true,,268,458,1,5,http://localhost%3A8360/api/address/deleteAddress,18,0,0
+1684310326945,21,保存收货地址（少参-缺少name）,200,OK,收货地址模块 6-1,text,true,,441,547,1,5,http://localhost%3A8360/api/address/saveAddress,21,0,0
+1684310326968,4,JDBC Request删除数据,200,OK,收货地址模块 6-1,text,true,,41,0,1,5,null,4,0,1
+1684310326937,69,下单前信息确认,200,OK,购物车模块 4-1,text,true,,443,466,1,5,http://localhost%3A8360/api/cart/checkout?addressId=0&addType=0&orderFrom=undefined&type=0,69,0,0
+1684310326974,40,保存收货地址（少参-缺少mobile）,200,OK,收货地址模块 6-1,text,true,,462,566,1,5,http://localhost%3A8360/api/address/saveAddress,40,0,0
+1684310327016,3,JDBC Request删除数据,200,OK,收货地址模块 6-1,text,true,,41,0,1,5,null,3,0,0
+1684310327021,21,保存收货地址（少参-缺少province_id）,200,OK,收货地址模块 6-1,text,true,,473,573,1,5,http://localhost%3A8360/api/address/saveAddress,21,0,0
+1684310327044,3,JDBC Request删除数据,200,OK,收货地址模块 6-1,text,true,,41,0,1,5,null,3,0,0
+1684310326839,210,提交订单（少参-缺少addressId）,500,Internal Server Error,订单模块 7-1,text,true,,109726,517,1,5,http://localhost%3A8360/api/order/submit,210,0,0
+1684310326903,156,分类请求（无参）,400,Bad Request,分类模块 3-1,text,true,,96916,443,1,5,http://localhost%3A8360/api/catalog/currentlist,155,0,0
+1684310327049,19,保存收货地址（少参-缺少city_id）,200,OK,收货地址模块 6-1,text,true,,472,576,1,5,http://localhost%3A8360/api/address/saveAddress,19,0,0
+1684310327070,3,JDBC Request删除数据,200,OK,收货地址模块 6-1,text,true,,41,0,1,5,null,2,0,0
+1684310327007,76,添加商品到购物车（多参）,200,OK,购物车模块 4-1,text,true,,900,510,1,5,http://localhost%3A8360/api/cart/add,76,0,0
+1684310327076,22,保存收货地址（少参-缺少district_id）,200,OK,收货地址模块 6-1,text,true,,471,571,1,5,http://localhost%3A8360/api/address/saveAddress,21,0,0
+1684310327099,4,JDBC Request删除数据,200,OK,收货地址模块 6-1,text,true,,41,0,1,5,null,4,0,0
+1684310327104,17,保存收货地址（少参-缺少address）,200,OK,收货地址模块 6-1,text,true,,463,567,1,5,http://localhost%3A8360/api/address/saveAddress,17,0,0
+1684310327122,4,JDBC Request删除数据,200,OK,收货地址模块 6-1,text,true,,41,0,1,5,null,4,0,0
+1684310327127,19,保存收货地址（错误参数）,200,OK,收货地址模块 6-1,text,true,,417,570,1,5,http://localhost%3A8360/api/address/saveAddress,19,0,0
+1684310327147,3,JDBC Request删除数据,200,OK,收货地址模块 6-1,text,true,,41,0,1,5,null,3,0,0
+1684310327084,68,添加商品到购物车（少参-缺少addType）,200,OK,购物车模块 4-1,text,true,,900,485,1,5,http://localhost%3A8360/api/cart/add,68,0,0
+1684310327059,163,分类请求（错误参）,500,Internal Server Error,分类模块 3-1,text,true,,109726,483,1,5,http://localhost%3A8360/api/catalog/currentlist,163,0,0
+1684310327050,182,提交订单（少参-缺少postscript）,500,Internal Server Error,订单模块 7-1,text,true,,104066,517,1,4,http://localhost%3A8360/api/order/submit,181,0,0
+1684310327232,7,提交订单（少参-缺少freightPrice）,200,OK,订单模块 7-1,text,true,,282,515,1,4,http://localhost%3A8360/api/order/submit,7,0,0
+1684310327240,39,提交订单（少参-缺少actualPrice）,200,OK,订单模块 7-1,text,true,,283,510,1,4,http://localhost%3A8360/api/order/submit,39,0,0
+1684310327280,9,提交订单（少参-缺少offlinePay）,200,OK,订单模块 7-1,text,true,,282,518,1,4,http://localhost%3A8360/api/order/submit,9,0,0
+1684310327153,196,添加商品到购物车（少参-缺少goodsId）,500,Internal Server Error,购物车模块 4-1,text,true,,109726,477,1,4,http://localhost%3A8360/api/cart/add,196,0,0
+1684310327152,216,获得收货地址,200,OK,收货地址模块 6-1,text,true,,578,424,1,4,http://localhost%3A8360/api/address/getAddresses,216,0,0
+1684310327289,80,提交订单（无参）,400,Bad Request,订单模块 7-1,text,true,,96915,436,1,4,http://localhost%3A8360/api/order/submit,79,0,0
+1684310327370,16,删除收货地址,200,OK,收货地址模块 6-1,text,true,,268,460,1,4,http://localhost%3A8360/api/address/deleteAddress,16,0,0
+1684310327387,11,JDBC Request插入数据,200,OK,收货地址模块 6-1,text,true,,9,0,1,4,null,11,0,1
+1684310327400,4,JDBC Request删除数据,200,OK,收货地址模块 6-1,text,true,,41,0,1,4,null,4,0,0
+1684310327350,72,添加商品到购物车（少参-缺少number）,200,OK,购物车模块 4-1,text,true,,900,487,1,3,http://localhost%3A8360/api/cart/add,72,0,0
+1684310327369,93,提交订单（错误参）,500,Internal Server Error,订单模块 7-1,text,true,,104065,541,1,3,http://localhost%3A8360/api/order/submit,92,0,0
+1684310327462,9,订单详情（订单不存在）,200,OK,订单模块 7-1,text,true,,276,429,1,3,http://localhost%3A8360/api/order/detail?orderId=1323,9,0,0
+1684310327472,45,JDBC Request删除数据,200,OK,订单模块 7-1,text,true,,41,0,1,3,null,45,0,43
+1684310327423,100,添加商品到购物车（少参-缺少productId）,500,Internal Server Error,购物车模块 4-1,text,true,,109725,482,1,2,http://localhost%3A8360/api/cart/add,100,0,0
+1684310327523,62,添加商品到购物车（无参）,400,Bad Request,购物车模块 4-1,text,true,,96915,432,1,2,http://localhost%3A8360/api/cart/add,62,0,0
+1684310327586,61,添加商品到购物车（错误参数）,500,Internal Server Error,购物车模块 4-1,text,true,,109725,503,1,2,http://localhost%3A8360/api/cart/add,61,0,0
+1684310327648,80,添加商品到购物车（错误参数）,500,Internal Server Error,购物车模块 4-1,text,true,,109725,503,1,2,http://localhost%3A8360/api/cart/add,79,0,0
+1684310327728,10,添加商品到购物车（库存不足）,200,OK,购物车模块 4-1,text,true,,272,500,1,2,http://localhost%3A8360/api/cart/add,10,0,0
+1684310327739,16,获取购物车的数据,200,OK,购物车模块 4-1,text,true,,900,414,1,2,http://localhost%3A8360/api/cart/index,16,0,0
+1684310327755,16,获取购物车的数据（多参）,200,OK,购物车模块 4-1,text,true,,900,422,1,2,http://localhost%3A8360/api/cart/index?abc=752,16,0,0
+1684310327772,10,更新购物车的商品,200,OK,购物车模块 4-1,text,true,,230,479,1,2,http://localhost%3A8360/api/cart/update,10,0,0
+1684310327782,11,更新购物车的商品（多参）,200,OK,购物车模块 4-1,text,true,,231,489,1,2,http://localhost%3A8360/api/cart/update,11,0,0
+1684310327793,75,更新购物车的商品（少参-缺少productId）,500,Internal Server Error,购物车模块 4-1,text,true,,109725,461,1,2,http://localhost%3A8360/api/cart/update,75,0,0
+1684310327869,8,更新购物车的商品（少参-缺少number）,200,OK,购物车模块 4-1,text,true,,230,466,1,2,http://localhost%3A8360/api/cart/update,8,0,0
+1684310327879,76,更新购物车的商品（少参-缺少id）,500,Internal Server Error,购物车模块 4-1,text,true,,109725,467,1,2,http://localhost%3A8360/api/cart/update,76,0,0
+1684310327955,67,更新购物车的商品（无参）,400,Bad Request,购物车模块 4-1,text,true,,96915,435,1,2,http://localhost%3A8360/api/cart/update,67,0,0
+1684310328023,80,更新购物车的商品（错误参数）,500,Internal Server Error,购物车模块 4-1,text,true,,109725,480,1,2,http://localhost%3A8360/api/cart/update,79,0,0
+1684310328103,64,更新购物车的商品（错误参数）,500,Internal Server Error,购物车模块 4-1,text,true,,109725,480,1,2,http://localhost%3A8360/api/cart/update,64,0,0
+1684310326365,1857,获取商品详情二维码,200,OK,个人中心模块 9-1,text,true,,428,420,1,2,http://localhost%3A8360/api/qrcode/getBase64,1857,0,0
+1684310328168,57,取消或选择购物车的商品（多参）,200,OK,购物车模块 4-1,text,true,,900,482,1,2,http://localhost%3A8360/api/cart/checked,57,0,0
+1684310328224,15,搜索页面数据（多参）,200,OK,个人中心模块 9-1,text,true,,332,424,1,2,http://localhost%3A8360/api/search/index?abc=123,15,0,0
+1684310328240,5,搜索帮助（多参）,200,OK,个人中心模块 9-1,text,true,,268,443,1,2,http://localhost%3A8360/api/search/helper?keyword=灯&abc=123,5,0,0
+1684310328246,3,搜索帮助（无参）,200,OK,个人中心模块 9-1,text,true,,268,417,1,2,http://localhost%3A8360/api/search/helper,3,0,0
+1684310328250,3,搜索帮助（错误参）,200,OK,个人中心模块 9-1,text,true,,268,436,1,2,http://localhost%3A8360/api/search/helper?keyword1=灯,3,0,0
+1684310328254,49,清除搜索历史（无参）,400,Bad Request,个人中心模块 9-1,text,true,,96915,443,1,2,http://localhost%3A8360/api/search/clearHistory,49,0,0
+1684310328304,6,清除搜索历史（错误参）,200,OK,个人中心模块 9-1,text,true,,268,445,1,2,http://localhost%3A8360/api/search/clearHistory,6,0,0
+1684310328311,5,清除搜索历史（多参）,200,OK,个人中心模块 9-1,text,true,,268,455,1,2,http://localhost%3A8360/api/search/clearHistory,5,0,0
+1684310328227,182,取消或选择购物车的商品（少参-缺少productIds）,500,Internal Server Error,购物车模块 4-1,text,true,,103440,453,1,1,http://localhost%3A8360/api/cart/checked,182,0,0
+1684310328409,24,取消或选择购物车的商品（少参- 缺少isChecked）,200,OK,购物车模块 4-1,text,true,,900,456,1,1,http://localhost%3A8360/api/cart/checked,24,0,0
+1684310328433,84,取消或选择购物车的商品（无参）,400,Bad Request,购物车模块 4-1,text,true,,96915,436,1,1,http://localhost%3A8360/api/cart/checked,84,0,0
+1684310328517,84,取消或选择购物车的商品（错误参数）,500,Internal Server Error,购物车模块 4-1,text,true,,103439,473,1,1,http://localhost%3A8360/api/cart/checked,84,0,0
+1684310328601,19,取消或选择购物车的商品（错误参数）,200,OK,购物车模块 4-1,text,true,,900,473,1,1,http://localhost%3A8360/api/cart/checked,19,0,0
+1684310328621,22,删除购物车的商品,200,OK,购物车模块 4-1,text,true,,415,456,1,1,http://localhost%3A8360/api/cart/delete,22,0,0
+1684310328644,15,删除购物车的商品（多参）,200,OK,购物车模块 4-1,text,true,,415,466,1,1,http://localhost%3A8360/api/cart/delete,15,0,0
+1684310328659,68,删除购物车的商品（无参）,400,Bad Request,购物车模块 4-1,text,true,,96915,435,1,1,http://localhost%3A8360/api/cart/delete,67,0,0
+1684310328728,2,删除购物车的商品（错误参）,200,OK,购物车模块 4-1,text,true,,273,457,1,1,http://localhost%3A8360/api/cart/delete,2,0,0
+1684310328730,75,JDBC Request删除数据,200,OK,购物车模块 4-1,text,true,,41,0,1,1,null,75,0,62

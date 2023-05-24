@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>report.html</title>
+    <link href="assets/style.css" rel="stylesheet" type="text/css"/></head>
+  <body onLoad="init()">
+    <script>/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+
+function toArray(iter) {
+    if (iter === null) {
+        return null;
+    }
+    return Array.prototype.slice.call(iter);
+}
+
+function find(selector, elem) { // eslint-disable-line no-redeclare
+    if (!elem) {
+        elem = document;
+    }
+    return elem.querySelector(selector);
+}
+
+function findAll(selector, elem) {
+    if (!elem) {
+        elem = document;
+    }
+    return toArray(elem.querySelectorAll(selector));
+}
+
+function sortColumn(elem) {
+    toggleSortStates(elem);
+    const colIndex = toArray(elem.parentNode.childNodes).indexOf(elem);
+    let key;
+    if (elem.classList.contains('result')) {
+        key = keyResult;
+    } else if (elem.classList.contains('links')) {
+        key = keyLink;
+    } else {
+        key = keyAlpha;
+    }
+    sortTable(elem, key(colIndex));
+}
+
+function showAllExtras() { // eslint-disable-line no-unused-vars
+    findAll('.col-result').forEach(showExtras);
+}
+
+function hideAllExtras() { // eslint-disable-line no-unused-vars
+    findAll('.col-result').forEach(hideExtras);
+}
+
+function showExtras(colresultElem) {
+    const extras = colresultElem.parentNode.nextElementSibling;
+    const expandcollapse = colresultElem.firstElementChild;
+    extras.classList.remove('collapsed');
+    expandcollapse.classList.remove('expander');
+    expandcollapse.classList.add('collapser');
+}
+
+function hideExtras(colresultElem) {
+    const extras = colresultElem.parentNode.nextElementSibling;
+    const expandcollapse = colresultElem.firstElementChild;
+    extras.classList.add('collapsed');
+    expandcollapse.classList.remove('collapser');
+    expandcollapse.classList.add('expander');
+}
+
+function showFilters() {
+    let visibleString = getQueryParameter('visible') || 'all';
+    visibleString = visibleString.toLowerCase();
+    const checkedItems = visibleString.split(',');
+
+    const filterItems = document.getElementsByClassName('filter');
+    for (let i = 0; i < filterItems.length; i++) {
+        filterItems[i].hidden = false;
+
+        if (visibleString != 'all') {
+            filterItems[i].checked = checkedItems.includes(filterItems[i].getAttribute('data-test-result'));
+            filterTable(filterItems[i]);
+        }
+    }
+}
+
+function addCollapse() {
+    // Add links for show/hide all
+    const resulttable = find('table#results-table');
+    const showhideall = document.createElement('p');
+    showhideall.innerHTML = '<a href="javascript:showAllExtras()">Show all details</a> / ' +
+                            '<a href="javascript:hideAllExtras()">Hide all details</a>';
+    resulttable.parentElement.insertBefore(showhideall, resulttable);
+
+    // Add show/hide link to each result
+    findAll('.col-result').forEach(function(elem) {
+        const collapsed = getQueryParameter('collapsed') || 'Passed';
+        const extras = elem.parentNode.nextElementSibling;
+        const expandcollapse = document.createElement('span');
+        if (extras.classList.contains('collapsed')) {
+            expandcollapse.classList.add('expander');
+        } else if (collapsed.includes(elem.innerHTML)) {
+            extras.classList.add('collapsed');
+            expandcollapse.classList.add('expander');
+        } else {
+            expandcollapse.classList.add('collapser');
+        }
+        elem.appendChild(expandcollapse);
+
+        elem.addEventListener('click', function(event) {
+            if (event.currentTarget.parentNode.nextElementSibling.classList.contains('collapsed')) {
+                showExtras(event.currentTarget);
+            } else {
+                hideExtras(event.currentTarget);
+            }
+        });
+    });
+}
+
+function getQueryParameter(name) {
+    const match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+    return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+}
+
+function init () { // eslint-disable-line no-unused-vars
+    resetSortHeaders();
+
+    addCollapse();
+
+    showFilters();
+
+    sortColumn(find('.initial-sort'));
+
+    findAll('.sortable').forEach(function(elem) {
+        elem.addEventListener('click',
+            function() {
+                sortColumn(elem);
+            }, false);
+    });
+}
+
+function sortTable(clicked, keyFunc) {
+    const rows = findAll('.results-table-row');
+    const reversed = !clicked.classList.contains('asc');
+    const sortedRows = sort(rows, keyFunc, reversed);
+    /* Whole table is removed here because browsers acts much slower
+     * when appending existing elements.
+     */
+    const thead = document.getElementById('results-table-head');
+    document.getElementById('results-table').remove();
+    const parent = document.createElement('table');
+    parent.id = 'results-table';
+    parent.appendChild(thead);
+    sortedRows.forEach(function(elem) {
+        parent.appendChild(elem);
+    });
+    document.getElementsByTagName('BODY')[0].appendChild(parent);
+}
+
+function sort(items, keyFunc, reversed) {
+    const sortArray = items.map(function(item, i) {
+        return [keyFunc(item), i];
+    });
+
+    sortArray.sort(function(a, b) {
+        const keyA = a[0];
+        const keyB = b[0];
+
+        if (keyA == keyB) return 0;
+
+        if (reversed) {
+            return keyA < keyB ? 1 : -1;
+        } else {
+            return keyA > keyB ? 1 : -1;
+        }
+    });
+
+    return sortArray.map(function(item) {
+        const index = item[1];
+        return items[index];
+    });
+}
+
+function keyAlpha(colIndex) {
+    return function(elem) {
+        return elem.childNodes[1].childNodes[colIndex].firstChild.data.toLowerCase();
+    };
+}
+
+function keyLink(colIndex) {
+    return function(elem) {
+        const dataCell = elem.childNodes[1].childNodes[colIndex].firstChild;
+        return dataCell == null ? '' : dataCell.innerText.toLowerCase();
+    };
+}
+
+function keyResult(colIndex) {
+    return function(elem) {
+        const strings = ['Error', 'Failed', 'Rerun', 'XFailed', 'XPassed',
+            'Skipped', 'Passed'];
+        return strings.indexOf(elem.childNodes[1].childNodes[colIndex].firstChild.data);
+    };
+}
+
+function resetSortHeaders() {
+    findAll('.sort-icon').forEach(function(elem) {
+        elem.parentNode.removeChild(elem);
+    });
+    findAll('.sortable').forEach(function(elem) {
+        const icon = document.createElement('div');
+        icon.className = 'sort-icon';
+        icon.textContent = 'vvv';
+        elem.insertBefore(icon, elem.firstChild);
+        elem.classList.remove('desc', 'active');
+        elem.classList.add('asc', 'inactive');
+    });
+}
+
+function toggleSortStates(elem) {
+    //if active, toggle between asc and desc
+    if (elem.classList.contains('active')) {
+        elem.classList.toggle('asc');
+        elem.classList.toggle('desc');
+    }
+
+    //if inactive, reset all other functions and add ascending active
+    if (elem.classList.contains('inactive')) {
+        resetSortHeaders();
+        elem.classList.remove('inactive');
+        elem.classList.add('active');
+    }
+}
+
+function isAllRowsHidden(value) {
+    return value.hidden == false;
+}
+
+function filterTable(elem) { // eslint-disable-line no-unused-vars
+    const outcomeAtt = 'data-test-result';
+    const outcome = elem.getAttribute(outcomeAtt);
+    const classOutcome = outcome + ' results-table-row';
+    const outcomeRows = document.getElementsByClassName(classOutcome);
+
+    for(let i = 0; i < outcomeRows.length; i++){
+        outcomeRows[i].hidden = !elem.checked;
+    }
+
+    const rows = findAll('.results-table-row').filter(isAllRowsHidden);
+    const allRowsHidden = rows.length == 0 ? true : false;
+    const notFoundMessage = document.getElementById('not-found-message');
+    notFoundMessage.hidden = !allRowsHidden;
+}
+</script>
+    <h1>report.html</h1>
+    <p>Report generated on 23-May-2023 at 20:04:01 by <a href="https://pypi.python.org/pypi/pytest-html">pytest-html</a> v3.2.0</p>
+    <h2>Environment</h2>
+    <table id="environment">
+      <tr>
+        <td>JAVA_HOME</td>
+        <td>F:\SoftDownLoad\JAVA\jdk-16.0.2</td></tr>
+      <tr>
+        <td>Packages</td>
+        <td>{"pluggy": "1.0.0", "pytest": "7.2.0"}</td></tr>
+      <tr>
+        <td>Platform</td>
+        <td>Windows-10-10.0.18363-SP0</td></tr>
+      <tr>
+        <td>Plugins</td>
+        <td>{"allure-pytest": "2.13.1", "anyio": "3.6.2", "html": "3.2.0", "metadata": "2.0.4", "ordering": "0.6", "rerunfailures": "11.1.2", "xdist": "3.2.1"}</td></tr>
+      <tr>
+        <td>Python</td>
+        <td>3.10.8</td></tr></table>
+    <h2>Summary</h2>
+    <p>7 tests ran in 2.39 seconds. </p>
+    <p class="filter" hidden="true">(Un)check the boxes to filter the results.</p><input checked="true" class="filter" data-test-result="passed" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="passed">7 passed</span>, <input checked="true" class="filter" data-test-result="skipped" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="skipped">0 skipped</span>, <input checked="true" class="filter" data-test-result="failed" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="failed">0 failed</span>, <input checked="true" class="filter" data-test-result="error" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="error">0 errors</span>, <input checked="true" class="filter" data-test-result="xfailed" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="xfailed">0 expected failures</span>, <input checked="true" class="filter" data-test-result="xpassed" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="xpassed">0 unexpected passes</span>, <input checked="true" class="filter" data-test-result="rerun" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="rerun">0 rerun</span>
+    <h2>Results</h2>
+    <table id="results-table">
+      <thead id="results-table-head">
+        <tr>
+          <th class="sortable result initial-sort" col="result">Result</th>
+          <th class="sortable" col="name">Test</th>
+          <th class="sortable" col="duration">Duration</th>
+          <th class="sortable links" col="links">Links</th></tr>
+        <tr hidden="true" id="not-found-message">
+          <th colspan="4">No results found. Try to check the filters</th></tr></thead>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">testcases/ categorize/test_categorize_api.py::TestCategorize::test_index</td>
+          <td class="col-duration">0.12</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>响应状态码正确
+返回响应文本
+<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">testcases/ categorize/test_categorize_api.py::TestCategorize::test_currentlist</td>
+          <td class="col-duration">0.08</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>currentlistResult {&#x27;errno&#x27;: 0, &#x27;errmsg&#x27;: &#x27;&#x27;, &#x27;data&#x27;: {&#x27;count&#x27;: 14, &#x27;totalPages&#x27;: 2, &#x27;pageSize&#x27;: 8, &#x27;currentPage&#x27;: 1, &#x27;data&#x27;: [{&#x27;name&#x27;: &#x27;日式和风懒人沙发&#x27;, &#x27;id&#x27;: 1009024, &#x27;goods_brief&#x27;: &#x27;此商品可以测试分享到朋友圈&#x27;, &#x27;min_retail_price&#x27;: 0.1, &#x27;list_pic_url&#x27;: &#x27;https://lucky-goods.meiweiyuxian.com/5b7c1d0a-a12f-48e5-9487-efb1a81a6864&#x27;, &#x27;goods_number&#x27;: 22}, {&#x27;name&#x27;: &#x27;怀抱休闲椅组合&#x27;, &#x27;id&#x27;: 1116032, &#x27;goods_brief&#x27;: &#x27;敦厚包裹感 葛优躺神器&#x27;, &#x27;min_retail_price&#x27;: 3499, &#x27;list_pic_url&#x27;: &#x27;http://yanxuan.nosdn.127.net/45176a783387751fc07a07f5031dd62c.png&#x27;, &#x27;goods_number&#x27;: 0}, {&#x27;name&#x27;: &#x27;纯棉水洗色织格夏凉被&#x27;, &#x27;id&#x27;: 1127052, &#x27;goods_brief&#x27;: &#x27;100%棉填充，透气排汗，双面可用&#x27;, &#x27;min_retail_price&#x27;: 169, &#x27;list_pic_url&#x27;: &#x27;http://yanxuan.nosdn.127.net/4f483526cfe3b953f403ae02049df5b9.png&#x27;, &#x27;goods_number&#x27;: 100}, {&#x27;name&#x27;: &#x27;求打赏&#x27;, &#x27;id&#x27;: 1086015, &#x27;goods_brief&#x27;: &#x27;开源不易，请打赏&#x27;, &#x27;min_retail_price&#x27;: 9.9, &#x27;list_pic_url&#x27;: &#x27;http://yanxuan.nosdn.127.net/d5c2ecfe0fb00cdd8b829975bab21a31.png&#x27;, &#x27;goods_number&#x27;: 100}, {&#x27;name&#x27;: &#x27;母亲节礼物-舒适安睡组合&#x27;, &#x27;id&#x27;: 1181000, &#x27;goods_brief&#x27;: &#x27;安心舒适是最好的礼物&#x27;, &#x27;min_retail_price&#x27;: 999, &#x27;list_pic_url&#x27;: &#x27;http://yanxuan.nosdn.127.net/1f67b1970ee20fd572b7202da0ff705d.png&#x27;, &#x27;goods_number&#x27;: 100}, {&#x27;name&#x27;: &#x27;可水洗舒柔丝羽绒枕&#x27;, &#x27;id&#x27;: 1009012, &#x27;goods_brief&#x27;: &#x27;超细纤维，蓬松轻盈回弹&#x27;, &#x27;min_retail_price&#x27;: 59, &#x27;list_pic_url&#x27;: &#x27;http://yanxuan.nosdn.127.net/a196b367f23ccfd8205b6da647c62b84.png&#x27;, &#x27;goods_number&#x27;: 100}, {&#x27;name&#x27;: &#x27;色织精梳AB纱格纹空调被&#x27;, &#x27;id&#x27;: 1011004, &#x27;goods_brief&#x27;: &#x27;加大加厚，双色精彩&#x27;, &#x27;min_retail_price&#x27;: 199, &#x27;list_pic_url&#x27;: &#x27;http://yanxuan.nosdn.127.net/0984c9388a2c3fd2335779da904be393.png&#x27;, &#x27;goods_number&#x27;: 100}, {&#x27;name&#x27;: &#x27;清欢日式可调节落地灯&#x27;, &#x27;id&#x27;: 1064022, &#x27;goods_brief&#x27;: &#x27;便易调节，风格百搭&#x27;, &#x27;min_retail_price&#x27;: 299, &#x27;list_pic_url&#x27;: &#x27;http://yanxuan.nosdn.127.net/a9c155e26d09e3c92b623f0472ed674a.png&#x27;, &#x27;goods_number&#x27;: 100}]}}
+<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">testcases/address/test_address_api.py::TestAddress::test_addressDetail</td>
+          <td class="col-duration">0.03</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>indexResult {&#x27;errno&#x27;: 0, &#x27;errmsg&#x27;: &#x27;&#x27;, &#x27;data&#x27;: {}}
+<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">testcases/address/test_address_api.py::TestAddress::test_saveAddress</td>
+          <td class="col-duration">0.03</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>saveAddressResult {&#x27;errno&#x27;: 0, &#x27;errmsg&#x27;: &#x27;&#x27;, &#x27;data&#x27;: {&#x27;id&#x27;: 1404, &#x27;name&#x27;: &#x27;ll&#x27;, &#x27;user_id&#x27;: 1098, &#x27;country_id&#x27;: 0, &#x27;province_id&#x27;: 3, &#x27;city_id&#x27;: 38, &#x27;district_id&#x27;: 423, &#x27;address&#x27;: &#x27;借记卡号&#x27;, &#x27;mobile&#x27;: &#x27;18967890876&#x27;, &#x27;is_default&#x27;: 0, &#x27;is_delete&#x27;: 0}}
+<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">testcases/address/test_address_api.py::TestAddress::test_getAddresses</td>
+          <td class="col-duration">0.26</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>getAddressesResult {&#x27;errno&#x27;: 0, &#x27;errmsg&#x27;: &#x27;&#x27;, &#x27;data&#x27;: [{&#x27;id&#x27;: 1404, &#x27;name&#x27;: &#x27;ll&#x27;, &#x27;user_id&#x27;: 1098, &#x27;country_id&#x27;: 0, &#x27;province_id&#x27;: 3, &#x27;city_id&#x27;: 38, &#x27;district_id&#x27;: 423, &#x27;address&#x27;: &#x27;借记卡号&#x27;, &#x27;mobile&#x27;: &#x27;18967890876&#x27;, &#x27;is_default&#x27;: 0, &#x27;is_delete&#x27;: 0, &#x27;province_name&#x27;: &#x27;天津市&#x27;, &#x27;city_name&#x27;: &#x27;天津市&#x27;, &#x27;district_name&#x27;: &#x27;河东区&#x27;, &#x27;full_region&#x27;: &#x27;天津市天津市河东区&#x27;}, {&#x27;id&#x27;: 1403, &#x27;name&#x27;: &#x27;ll&#x27;, &#x27;user_id&#x27;: 1098, &#x27;country_id&#x27;: 0, &#x27;province_id&#x27;: 3, &#x27;city_id&#x27;: 38, &#x27;district_id&#x27;: 423, &#x27;address&#x27;: &#x27;借记卡号&#x27;, &#x27;mobile&#x27;: &#x27;18967890876&#x27;, &#x27;is_default&#x27;: 0, &#x27;is_delete&#x27;: 0, &#x27;province_name&#x27;: &#x27;天津市&#x27;, &#x27;city_name&#x27;: &#x27;天津市&#x27;, &#x27;district_name&#x27;: &#x27;河东区&#x27;, &#x27;full_region&#x27;: &#x27;天津市天津市河东区&#x27;}, {&#x27;id&#x27;: 1402, &#x27;name&#x27;: &#x27;ll&#x27;, &#x27;user_id&#x27;: 1098, &#x27;country_id&#x27;: 0, &#x27;province_id&#x27;: 3, &#x27;city_id&#x27;: 38, &#x27;district_id&#x27;: 423, &#x27;address&#x27;: &#x27;借记卡号&#x27;, &#x27;mobile&#x27;: &#x27;18967890876&#x27;, &#x27;is_default&#x27;: 0, &#x27;is_delete&#x27;: 0, &#x27;province_name&#x27;: &#x27;天津市&#x27;, &#x27;city_name&#x27;: &#x27;天津市&#x27;, &#x27;district_name&#x27;: &#x27;河东区&#x27;, &#x27;full_region&#x27;: &#x27;天津市天津市河东区&#x27;}, {&#x27;id&#x27;: 1401, &#x27;name&#x27;: &#x27;ll&#x27;, &#x27;user_id&#x27;: 1098, &#x27;country_id&#x27;: 0, &#x27;province_id&#x27;: 3, &#x27;city_id&#x27;: 38, &#x27;district_id&#x27;: 423, &#x27;address&#x27;: &#x27;借记卡号&#x27;, &#x27;mobile&#x27;: &#x27;18967890876&#x27;, &#x27;is_default&#x27;: 0, &#x27;is_delete&#x27;: 0, &#x27;province_name&#x27;: &#x27;天津市&#x27;, &#x27;city_name&#x27;: &#x27;天津市&#x27;, &#x27;district_name&#x27;: &#x27;河东区&#x27;, &#x27;full_region&#x27;: &#x27;天津市天津市河东区&#x27;}, {&#x27;id&#x27;: 1400, &#x27;name&#x27;: &#x27;ll&#x27;, &#x27;user_id&#x27;: 1098, &#x27;country_id&#x27;: 0, &#x27;province_id&#x27;: 3, &#x27;city_id&#x27;: 38, &#x27;district_id&#x27;: 423, &#x27;address&#x27;: &#x27;借记卡号&#x27;, &#x27;mobile&#x27;: &#x27;18967890876&#x27;, &#x27;is_default&#x27;: 0, &#x27;is_delete&#x27;: 0, &#x27;province_name&#x27;: &#x27;天津市&#x27;, &#x27;city_name&#x27;: &#x27;天津市&#x27;, &#x27;district_name&#x27;: &#x27;河东区&#x27;, &#x27;full_region&#x27;: &#x27;天津市天津市河东区&#x27;}, {&#x27;id&#x27;: 1399, &#x27;name&#x27;: &#x27;ll&#x27;, &#x27;user_id&#x27;: 1098, &#x27;country_id&#x27;: 0, &#x27;province_id&#x27;: 3, &#x27;city_id&#x27;: 38, &#x27;district_id&#x27;: 423, &#x27;address&#x27;: &#x27;借记卡号&#x27;, &#x27;mobile&#x27;: &#x27;18967890876&#x27;, &#x27;is_default&#x27;: 0, &#x27;is_delete&#x27;: 0, &#x27;province_name&#x27;: &#x27;天津市&#x27;, &#x27;city_name&#x27;: &#x27;天津市&#x27;, &#x27;district_name&#x27;: &#x27;河东区&#x27;, &#x27;full_region&#x27;: &#x27;天津市天津市河东区&#x27;}, {&#x27;id&#x27;: 1398, &#x27;name&#x27;: &#x27;ll&#x27;, &#x27;user_id&#x27;: 1098, &#x27;country_id&#x27;: 0, &#x27;province_id&#x27;: 3, &#x27;city_id&#x27;: 38, &#x27;district_id&#x27;: 423, &#x27;address&#x27;: &#x27;借记卡号&#x27;, &#x27;mobile&#x27;: &#x27;18967890876&#x27;, &#x27;is_default&#x27;: 0, &#x27;is_delete&#x27;: 0, &#x27;province_name&#x27;: &#x27;天津市&#x27;, &#x27;city_name&#x27;: &#x27;天津市&#x27;, &#x27;district_name&#x27;: &#x27;河东区&#x27;, &#x27;full_region&#x27;: &#x27;天津市天津市河东区&#x27;}, {&#x27;id&#x27;: 1397, &#x27;name&#x27;: &#x27;ll&#x27;, &#x27;user_id&#x27;: 1098, &#x27;country_id&#x27;: 0, &#x27;province_id&#x27;: 3, &#x27;city_id&#x27;: 38, &#x27;district_id&#x27;: 423, &#x27;address&#x27;: &#x27;借记卡号&#x27;, &#x27;mobile&#x27;: &#x27;18967890876&#x27;, &#x27;is_default&#x27;: 0, &#x27;is_delete&#x27;: 0, &#x27;province_name&#x27;: &#x27;天津市&#x27;, &#x27;city_name&#x27;: &#x27;天津市&#x27;, &#x27;district_name&#x27;: &#x27;河东区&#x27;, &#x27;full_region&#x27;: &#x27;天津市天津市河东区&#x27;}, {&#x27;id&#x27;: 1396, &#x27;name&#x27;: &#x27;ll&#x27;, &#x27;user_id&#x27;: 1098, &#x27;country_id&#x27;: 0, &#x27;province_id&#x27;: 3, &#x27;city_id&#x27;: 38, &#x27;district_id&#x27;: 423, &#x27;address&#x27;: &#x27;借记卡号&#x27;, &#x27;mobile&#x27;: &#x27;18967890876&#x27;, &#x27;is_default&#x27;: 0, &#x27;is_delete&#x27;: 0, &#x27;province_name&#x27;: &#x27;天津市&#x27;, &#x27;city_name&#x27;: &#x27;天津市&#x27;, &#x27;district_name&#x27;: &#x27;河东区&#x27;, &#x27;full_region&#x27;: &#x27;天津市天津市河东区&#x27;}, {&#x27;id&#x27;: 1395, &#x27;name&#x27;: &#x27;ll&#x27;, &#x27;user_id&#x27;: 1098, &#x27;country_id&#x27;: 0, &#x27;province_id&#x27;: 3, &#x27;city_id&#x27;: 38, &#x27;district_id&#x27;: 423, &#x27;address&#x27;: &#x27;借记卡号&#x27;, &#x27;mobile&#x27;: &#x27;18967890876&#x27;, &#x27;is_default&#x27;: 0, &#x27;is_delete&#x27;: 0, &#x27;province_name&#x27;: &#x27;天津市&#x27;, &#x27;city_name&#x27;: &#x27;天津市&#x27;, &#x27;district_name&#x27;: &#x27;河东区&#x27;, &#x27;full_region&#x27;: &#x27;天津市天津市河东区&#x27;}, {&#x27;id&#x27;: 1394, &#x27;name&#x27;: &#x27;ll&#x27;, &#x27;user_id&#x27;: 1098, &#x27;country_id&#x27;: 0, &#x27;province_id&#x27;: 3, &#x27;city_id&#x27;: 38, &#x27;district_id&#x27;: 423, &#x27;address&#x27;: &#x27;借记卡号&#x27;, &#x27;mobile&#x27;: &#x27;18967890876&#x27;, &#x27;is_default&#x27;: 0, &#x27;is_delete&#x27;: 0, &#x27;province_name&#x27;: &#x27;天津市&#x27;, &#x27;city_name&#x27;: &#x27;天津市&#x27;, &#x27;district_name&#x27;: &#x27;河东区&#x27;, &#x27;full_region&#x27;: &#x27;天津市天津市河东区&#x27;}, {&#x27;id&#x27;: 1393, &#x27;name&#x27;: &#x27;ll&#x27;, &#x27;user_id&#x27;: 1098, &#x27;country_id&#x27;: 0, &#x27;province_id&#x27;: 3, &#x27;city_id&#x27;: 38, &#x27;district_id&#x27;: 423, &#x27;address&#x27;: &#x27;借记卡号&#x27;, &#x27;mobile&#x27;: &#x27;18967890876&#x27;, &#x27;is_default&#x27;: 0, &#x27;is_delete&#x27;: 0, &#x27;province_name&#x27;: &#x27;天津市&#x27;, &#x27;city_name&#x27;: &#x27;天津市&#x27;, &#x27;district_name&#x27;: &#x27;河东区&#x27;, &#x27;full_region&#x27;: &#x27;天津市天津市河东区&#x27;}, {&#x27;id&#x27;: 1392, &#x27;name&#x27;: &#x27;ll&#x27;, &#x27;user_id&#x27;: 1098, &#x27;country_id&#x27;: 0, &#x27;province_id&#x27;: 3, &#x27;city_id&#x27;: 38, &#x27;district_id&#x27;: 423, &#x27;address&#x27;: &#x27;借记卡号&#x27;, &#x27;mobile&#x27;: &#x27;18967890876&#x27;, &#x27;is_default&#x27;: 0, &#x27;is_delete&#x27;: 0, &#x27;province_name&#x27;: &#x27;天津市&#x27;, &#x27;city_name&#x27;: &#x27;天津市&#x27;, &#x27;district_name&#x27;: &#x27;河东区&#x27;, &#x27;full_region&#x27;: &#x27;天津市天津市河东区&#x27;}, {&#x27;id&#x27;: 1391, &#x27;name&#x27;: &#x27;ll&#x27;, &#x27;user_id&#x27;: 1098, &#x27;country_id&#x27;: 0, &#x27;province_id&#x27;: 3, &#x27;city_id&#x27;: 38, &#x27;district_id&#x27;: 423, &#x27;address&#x27;: &#x27;借记卡号&#x27;, &#x27;mobile&#x27;: &#x27;18967890876&#x27;, &#x27;is_default&#x27;: 0, &#x27;is_delete&#x27;: 0, &#x27;province_name&#x27;: &#x27;天津市&#x27;, &#x27;city_name&#x27;: &#x27;天津市&#x27;, &#x27;district_name&#x27;: &#x27;河东区&#x27;, &#x27;full_region&#x27;: &#x27;天津市天津市河东区&#x27;}]}
+<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">testcases/address/test_address_api.py::TestAddress::test_deleteAddress</td>
+          <td class="col-duration">0.02</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>deleteAddressResult {&#x27;errno&#x27;: 0, &#x27;errmsg&#x27;: &#x27;&#x27;, &#x27;data&#x27;: 0}
+<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">testcases/address/test_address_api.py::TestAddress::test_regionList</td>
+          <td class="col-duration">0.02</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stdout call------------------------------ <br/>deleteAddressResult {&#x27;errno&#x27;: 0, &#x27;errmsg&#x27;: &#x27;&#x27;, &#x27;data&#x27;: [{&#x27;id&#x27;: 2, &#x27;parent_id&#x27;: 1, &#x27;name&#x27;: &#x27;北京市&#x27;, &#x27;type&#x27;: 1, &#x27;agency_id&#x27;: 0, &#x27;area&#x27;: 4, &#x27;area_code&#x27;: &#x27;HB&#x27;, &#x27;far_area&#x27;: 0}, {&#x27;id&#x27;: 3, &#x27;parent_id&#x27;: 1, &#x27;name&#x27;: &#x27;天津市&#x27;, &#x27;type&#x27;: 1, &#x27;agency_id&#x27;: 0, &#x27;area&#x27;: 4, &#x27;area_code&#x27;: &#x27;HB&#x27;, &#x27;far_area&#x27;: 0}, {&#x27;id&#x27;: 4, &#x27;parent_id&#x27;: 1, &#x27;name&#x27;: &#x27;河北省&#x27;, &#x27;type&#x27;: 1, &#x27;agency_id&#x27;: 0, &#x27;area&#x27;: 4, &#x27;area_code&#x27;: &#x27;HB&#x27;, &#x27;far_area&#x27;: 0}, {&#x27;id&#x27;: 5, &#x27;parent_id&#x27;: 1, &#x27;name&#x27;: &#x27;山西省&#x27;, &#x27;type&#x27;: 1, &#x27;agency_id&#x27;: 0, &#x27;area&#x27;: 4, &#x27;area_code&#x27;: &#x27;HB&#x27;, &#x27;far_area&#x27;: 0}, {&#x27;id&#x27;: 6, &#x27;parent_id&#x27;: 1, &#x27;name&#x27;: &#x27;内蒙古自治区&#x27;, &#x27;type&#x27;: 1, &#x27;agency_id&#x27;: 0, &#x27;area&#x27;: 4, &#x27;area_code&#x27;: &#x27;HB&#x27;, &#x27;far_area&#x27;: 1}, {&#x27;id&#x27;: 7, &#x27;parent_id&#x27;: 1, &#x27;name&#x27;: &#x27;辽宁省&#x27;, &#x27;type&#x27;: 1, &#x27;agency_id&#x27;: 0, &#x27;area&#x27;: 6, &#x27;area_code&#x27;: &#x27;DB&#x27;, &#x27;far_area&#x27;: 0}, {&#x27;id&#x27;: 8, &#x27;parent_id&#x27;: 1, &#x27;name&#x27;: &#x27;吉林省&#x27;, &#x27;type&#x27;: 1, &#x27;agency_id&#x27;: 0, &#x27;area&#x27;: 6, &#x27;area_code&#x27;: &#x27;DB&#x27;, &#x27;far_area&#x27;: 0}, {&#x27;id&#x27;: 9, &#x27;parent_id&#x27;: 1, &#x27;name&#x27;: &#x27;黑龙江省&#x27;, &#x27;type&#x27;: 1, &#x27;agency_id&#x27;: 0, &#x27;area&#x27;: 6, &#x27;area_code&#x27;: &#x27;DB&#x27;, &#x27;far_area&#x27;: 0}, {&#x27;id&#x27;: 10, &#x27;parent_id&#x27;: 1, &#x27;name&#x27;: &#x27;上海市&#x27;, &#x27;type&#x27;: 1, &#x27;agency_id&#x27;: 0, &#x27;area&#x27;: 1, &#x27;area_code&#x27;: &#x27;HD&#x27;, &#x27;far_area&#x27;: 0}, {&#x27;id&#x27;: 11, &#x27;parent_id&#x27;: 1, &#x27;name&#x27;: &#x27;江苏省&#x27;, &#x27;type&#x27;: 1, &#x27;agency_id&#x27;: 0, &#x27;area&#x27;: 1, &#x27;area_code&#x27;: &#x27;HD&#x27;, &#x27;far_area&#x27;: 0}, {&#x27;id&#x27;: 12, &#x27;parent_id&#x27;: 1, &#x27;name&#x27;: &#x27;浙江省&#x27;, &#x27;type&#x27;: 1, &#x27;agency_id&#x27;: 0, &#x27;area&#x27;: 1, &#x27;area_code&#x27;: &#x27;HD&#x27;, &#x27;far_area&#x27;: 0}, {&#x27;id&#x27;: 13, &#x27;parent_id&#x27;: 1, &#x27;name&#x27;: &#x27;安徽省&#x27;, &#x27;type&#x27;: 1, &#x27;agency_id&#x27;: 0, &#x27;area&#x27;: 1, &#x27;area_code&#x27;: &#x27;HD&#x27;, &#x27;far_area&#x27;: 0}, {&#x27;id&#x27;: 14, &#x27;parent_id&#x27;: 1, &#x27;name&#x27;: &#x27;福建省&#x27;, &#x27;type&#x27;: 1, &#x27;agency_id&#x27;: 0, &#x27;area&#x27;: 2, &#x27;area_code&#x27;: &#x27;HN&#x27;, &#x27;far_area&#x27;: 0}, {&#x27;id&#x27;: 15, &#x27;parent_id&#x27;: 1, &#x27;name&#x27;: &#x27;江西省&#x27;, &#x27;type&#x27;: 1, &#x27;agency_id&#x27;: 0, &#x27;area&#x27;: 1, &#x27;area_code&#x27;: &#x27;HD&#x27;, &#x27;far_area&#x27;: 0}, {&#x27;id&#x27;: 16, &#x27;parent_id&#x27;: 1, &#x27;name&#x27;: &#x27;山东省&#x27;, &#x27;type&#x27;: 1, &#x27;agency_id&#x27;: 0, &#x27;area&#x27;: 4, &#x27;area_code&#x27;: &#x27;HB&#x27;, &#x27;far_area&#x27;: 0}, {&#x27;id&#x27;: 17, &#x27;parent_id&#x27;: 1, &#x27;name&#x27;: &#x27;河南省&#x27;, &#x27;type&#x27;: 1, &#x27;agency_id&#x27;: 0, &#x27;area&#x27;: 3, &#x27;area_code&#x27;: &#x27;HZ&#x27;, &#x27;far_area&#x27;: 0}, {&#x27;id&#x27;: 18, &#x27;parent_id&#x27;: 1, &#x27;name&#x27;: &#x27;湖北省&#x27;, &#x27;type&#x27;: 1, &#x27;agency_id&#x27;: 0, &#x27;area&#x27;: 3, &#x27;area_code&#x27;: &#x27;HZ&#x27;, &#x27;far_area&#x27;: 0}, {&#x27;id&#x27;: 19, &#x27;parent_id&#x27;: 1, &#x27;name&#x27;: &#x27;湖南省&#x27;, &#x27;type&#x27;: 1, &#x27;agency_id&#x27;: 0, &#x27;area&#x27;: 3, &#x27;area_code&#x27;: &#x27;HZ&#x27;, &#x27;far_area&#x27;: 0}, {&#x27;id&#x27;: 20, &#x27;parent_id&#x27;: 1, &#x27;name&#x27;: &#x27;广东省&#x27;, &#x27;type&#x27;: 1, &#x27;agency_id&#x27;: 0, &#x27;area&#x27;: 2, &#x27;area_code&#x27;: &#x27;HN&#x27;, &#x27;far_area&#x27;: 0}, {&#x27;id&#x27;: 21, &#x27;parent_id&#x27;: 1, &#x27;name&#x27;: &#x27;广西壮族自治区&#x27;, &#x27;type&#x27;: 1, &#x27;agency_id&#x27;: 0, &#x27;area&#x27;: 2, &#x27;area_code&#x27;: &#x27;HN&#x27;, &#x27;far_area&#x27;: 0}, {&#x27;id&#x27;: 22, &#x27;parent_id&#x27;: 1, &#x27;name&#x27;: &#x27;海南省&#x27;, &#x27;type&#x27;: 1, &#x27;agency_id&#x27;: 0, &#x27;area&#x27;: 2, &#x27;area_code&#x27;: &#x27;HN&#x27;, &#x27;far_area&#x27;: 1}, {&#x27;id&#x27;: 23, &#x27;parent_id&#x27;: 1, &#x27;name&#x27;: &#x27;重庆市&#x27;, &#x27;type&#x27;: 1, &#x27;agency_id&#x27;: 0, &#x27;area&#x27;: 5, &#x27;area_code&#x27;: &#x27;XN&#x27;, &#x27;far_area&#x27;: 0}, {&#x27;id&#x27;: 24, &#x27;parent_id&#x27;: 1, &#x27;name&#x27;: &#x27;四川省&#x27;, &#x27;type&#x27;: 1, &#x27;agency_id&#x27;: 0, &#x27;area&#x27;: 5, &#x27;area_code&#x27;: &#x27;XN&#x27;, &#x27;far_area&#x27;: 0}, {&#x27;id&#x27;: 25, &#x27;parent_id&#x27;: 1, &#x27;name&#x27;: &#x27;贵州省&#x27;, &#x27;type&#x27;: 1, &#x27;agency_id&#x27;: 0, &#x27;area&#x27;: 5, &#x27;area_code&#x27;: &#x27;XN&#x27;, &#x27;far_area&#x27;: 0}, {&#x27;id&#x27;: 26, &#x27;parent_id&#x27;: 1, &#x27;name&#x27;: &#x27;云南省&#x27;, &#x27;type&#x27;: 1, &#x27;agency_id&#x27;: 0, &#x27;area&#x27;: 5, &#x27;area_code&#x27;: &#x27;XN&#x27;, &#x27;far_area&#x27;: 0}, {&#x27;id&#x27;: 27, &#x27;parent_id&#x27;: 1, &#x27;name&#x27;: &#x27;西藏自治区&#x27;, &#x27;type&#x27;: 1, &#x27;agency_id&#x27;: 0, &#x27;area&#x27;: 5, &#x27;area_code&#x27;: &#x27;XN&#x27;, &#x27;far_area&#x27;: 1}, {&#x27;id&#x27;: 28, &#x27;parent_id&#x27;: 1, &#x27;name&#x27;: &#x27;陕西省&#x27;, &#x27;type&#x27;: 1, &#x27;agency_id&#x27;: 0, &#x27;area&#x27;: 7, &#x27;area_code&#x27;: &#x27;XB&#x27;, &#x27;far_area&#x27;: 0}, {&#x27;id&#x27;: 29, &#x27;parent_id&#x27;: 1, &#x27;name&#x27;: &#x27;甘肃省&#x27;, &#x27;type&#x27;: 1, &#x27;agency_id&#x27;: 0, &#x27;area&#x27;: 7, &#x27;area_code&#x27;: &#x27;XB&#x27;, &#x27;far_area&#x27;: 1}, {&#x27;id&#x27;: 30, &#x27;parent_id&#x27;: 1, &#x27;name&#x27;: &#x27;青海省&#x27;, &#x27;type&#x27;: 1, &#x27;agency_id&#x27;: 0, &#x27;area&#x27;: 7, &#x27;area_code&#x27;: &#x27;XB&#x27;, &#x27;far_area&#x27;: 1}, {&#x27;id&#x27;: 31, &#x27;parent_id&#x27;: 1, &#x27;name&#x27;: &#x27;宁夏回族自治区&#x27;, &#x27;type&#x27;: 1, &#x27;agency_id&#x27;: 0, &#x27;area&#x27;: 7, &#x27;area_code&#x27;: &#x27;XB&#x27;, &#x27;far_area&#x27;: 1}, {&#x27;id&#x27;: 32, &#x27;parent_id&#x27;: 1, &#x27;name&#x27;: &#x27;新疆维吾尔自治区&#x27;, &#x27;type&#x27;: 1, &#x27;agency_id&#x27;: 0, &#x27;area&#x27;: 7, &#x27;area_code&#x27;: &#x27;XB&#x27;, &#x27;far_area&#x27;: 1}, {&#x27;id&#x27;: 33, &#x27;parent_id&#x27;: 1, &#x27;name&#x27;: &#x27;台湾省&#x27;, &#x27;type&#x27;: 1, &#x27;agency_id&#x27;: 0, &#x27;area&#x27;: 8, &#x27;area_code&#x27;: &#x27;GAT&#x27;, &#x27;far_area&#x27;: 1}, {&#x27;id&#x27;: 34, &#x27;parent_id&#x27;: 1, &#x27;name&#x27;: &#x27;香港特别行政区&#x27;, &#x27;type&#x27;: 1, &#x27;agency_id&#x27;: 0, &#x27;area&#x27;: 8, &#x27;area_code&#x27;: &#x27;GAT&#x27;, &#x27;far_area&#x27;: 1}, {&#x27;id&#x27;: 35, &#x27;parent_id&#x27;: 1, &#x27;name&#x27;: &#x27;澳门特别行政区&#x27;, &#x27;type&#x27;: 1, &#x27;agency_id&#x27;: 0, &#x27;area&#x27;: 8, &#x27;area_code&#x27;: &#x27;GAT&#x27;, &#x27;far_area&#x27;: 1}, {&#x27;id&#x27;: 36, &#x27;parent_id&#x27;: 1, &#x27;name&#x27;: &#x27;海外&#x27;, &#x27;type&#x27;: 1, &#x27;agency_id&#x27;: 0, &#x27;area&#x27;: 9, &#x27;area_code&#x27;: &#x27;HW&#x27;, &#x27;far_area&#x27;: 0}]}
+<br/></div></td></tr></tbody></table></body></html>
